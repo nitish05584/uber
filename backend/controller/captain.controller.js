@@ -17,16 +17,20 @@ const registerCaptain=async(req,res)=>{
      
     const hashedPassword=await bcrypt.hash(password,10)
 
-    const captain=await captainModel.create({
-       firstname: fullname.firstname,
-        lastname: fullname.lastname,
-        email,
-        password: hashedPassword,
+   const captain = await captainModel.create({
+    fullname: {
+        firstname: fullname.firstname,
+        lastname: fullname.lastname
+    },
+    email,
+    password: hashedPassword,
+    vehicle: {
         color: vehicle.color,
         plate: vehicle.plate,
         capacity: vehicle.capacity,
-        vehicleType: vehicle.vehicleType 
-    })
+        vehicleType: vehicle.vehicleType
+    }
+});
 
     const token= generateAuthToken(captain._id);
 
@@ -83,10 +87,37 @@ const loginCaptain=async(req,res)=>{
 }
 
 
+const getCaptainProfile=async(req,res)=>{
+    try {
+        const captain=await captainModel.findById(req.captId).select("-password")
+        if(!captain){
+          return res.status(404).json({message:"user is not found"})  
+        }
+         return res.status(200).json(captain);
+    } catch (error) {
+         console.error(error);
+    return res.status(500).json({ message: " getcaptain  error"}) 
+    }
+}
+
+
+ const logoutCaptain=async(req,res)=>{
+    try {
+         res.clearCookie("token")
+          return res.status(200).json({ 
+      message:"captain logout successfully" 
+    });
+    } catch (error) {
+          console.error(error);
+    return res.status(500).json({ message: " getcaptain logout error"})
+    }
+ }
 
 
 
 module.exports={
     registerCaptain,
     loginCaptain,
+    getCaptainProfile,
+    logoutCaptain
 }
