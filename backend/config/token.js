@@ -10,8 +10,20 @@ const genToken=async(userId)=>{
     }
 
 }
+   
+const generateAuthToken=async(captId)=>{
+    try {
+        const token=await jwt.sign({captId},process.env.JWT_SECRET,{expireIn:"10"})
+        return token
+    } catch (error) {
+        console.log(error)
+    }
+}
+
+
 
 
     module.exports={
-        genToken
+        genToken,
+        generateAuthToken,
     }
