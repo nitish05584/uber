@@ -13,7 +13,7 @@ const genToken=async(userId)=>{
    
 const generateAuthToken=async(captId)=>{
     try {
-        const token=await jwt.sign({captId},process.env.JWT_SECRET,{expiresIn:"10"})
+        const token=await jwt.sign({captId},process.env.JWT_SECRET,{expiresIn:'10d'})
         return token
     } catch (error) {
         console.log(error)
