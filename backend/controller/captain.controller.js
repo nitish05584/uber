@@ -32,7 +32,7 @@ const registerCaptain=async(req,res)=>{
     }
 });
 
-    const token= generateAuthToken(captain._id);
+    const token=await generateAuthToken(captain._id);
 
        res.cookie("token", token, {
       httpOnly: true,
@@ -41,7 +41,7 @@ const registerCaptain=async(req,res)=>{
       maxAge: 7 * 24 * 60 * 60 * 1000,
        });
 
-          res.status(201).json(captain);
+          res.status(201).json({captain,token});
 
 
     } catch (error) {
@@ -67,7 +67,7 @@ const loginCaptain=async(req,res)=>{
          return res.status(401).json({ message: 'Invalid email or password' });
     }
 
-    const token=generateAuthToken(captain._id) 
+    const token=await generateAuthToken(captain._id) 
        
      res.cookie("token", token, {
       httpOnly: true,
@@ -77,7 +77,7 @@ const loginCaptain=async(req,res)=>{
        });
 
 
-         res.status(200).json(captain);
+         res.status(200).json({captain,token});
 
 
     } catch (error) {

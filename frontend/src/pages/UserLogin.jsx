@@ -1,6 +1,9 @@
 import React from 'react'
+import { useContext } from 'react'
 import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
+import { UserDataContext } from '../context/UserContext'
+import axios from 'axios'
 
 const UserLogin = () => {
     const [email,setEmail]=useState("")
@@ -8,9 +11,39 @@ const UserLogin = () => {
 
     const [userData,setUserData]=useState({})
 
-    const submitHandler=(e)=>{
-      e.preventDefault()
-    }
+
+    const {user,setUser}=useContext(UserDataContext)
+    const navigate=useNavigate()
+
+      const submitHandler = async (e) => {
+      e.preventDefault();
+    
+      const userData = {
+        email,
+        password
+      };
+    
+      try {
+        const response = await axios.post(
+          `${import.meta.env.VITE_BASE_URL}/users/login`,
+          userData,
+          { withCredentials: true }
+        );
+    
+        if (response.status === 201) {
+          const data = response.data;
+          setUser(data.user);
+          localStorage.setItem('token',data.token)
+          navigate('/home');
+        }
+    
+        setEmail('');
+        setPassword('');
+    
+      } catch (error) {
+        console.log(error.response?.data || error.message);
+      }
+    };
   return (
     <div className='p-7 flex h-screen flex-col justify-between'>
        <div className=''>

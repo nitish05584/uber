@@ -1,5 +1,6 @@
 const express=require("express");
-const { registerUser, loginUser } = require("../controller/user.controller");
+const { registerUser, loginUser, getUserProfile, logout } = require("../controller/user.controller");
+const { authUser } = require("../middleware/auth.middleware");
 
 
 
@@ -10,7 +11,9 @@ userRoutes.post("/register",registerUser)
 
 userRoutes.post("/login",loginUser)
 
+userRoutes.get('/profile',authUser,getUserProfile)
 
+userRoutes.get('/logout',authUser,logout)
 
 
 module.exports=userRoutes

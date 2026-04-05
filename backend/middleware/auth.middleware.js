@@ -43,6 +43,6 @@ const authCaptain=async(req,res,next)=>{
 }
 
 module.exports={
-    isAuth,
+   authUser,
     authCaptain,
 }

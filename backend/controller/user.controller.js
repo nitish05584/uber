@@ -41,7 +41,11 @@ const registerUser=async(req,res)=>{
       maxAge: 7 * 24 * 60 * 60 * 1000,
        });
 
-       return res.status(201).json(user)
+       return res.status(201).json({
+     message: 'User registered successfully',
+     user,
+     token,
+    })
 
     } catch (error) {
        console.error(error);
@@ -54,6 +58,11 @@ const loginUser=async(req,res)=>{
     try {
         const {email,password}=req.body
 
+
+        if (!email || !password) {
+            return res.status(400).json({ message: 'Email and password are required' });
+        }
+
         const user=await User.findOne({email}).select('+password')
         if(!user){
            return res.status(401).json({ message: 'Invalid email or password' }); 
@@ -63,14 +72,14 @@ const loginUser=async(req,res)=>{
         if(!isMatch){
             return res.status(400).json({message:"Incorrect password"})
         }
-        const token=genToken(user._id)
+        const token=await genToken(user._id)
            res.cookie("token", token, {
       httpOnly: true,
       secure: false,
       sameSite: "Lax",
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
-         return res.status(200).json(user);
+         return res.status(201).json({user,token});
 
     } catch (error) {
          console.error(error);
