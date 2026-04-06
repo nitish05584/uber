@@ -14,6 +14,7 @@ import VehiclePanel from '../components/VehiclsPanel';
 import ConfirmRide from '../components/ConfirmRide';
 import LookingForDriver from '../components/LookingForDriver';
 import WaitingForDriver from '../components/WaitingForDriver';
+import LiveTracking from '../components/LiveTracking';
 
 const Home = () => {
     const [ pickup, setPickup ] = useState('')
@@ -38,6 +39,76 @@ const Home = () => {
 
     const navigate = useNavigate()
 
+    const getAuthHeaders = () => ({
+        Authorization: `Bearer ${localStorage.getItem('token')}`
+    })
+
+    const calculateFare = (distanceInMeters) => {
+        const distanceInKm = distanceInMeters / 1000
+
+        return {
+            car: Math.max(50, Math.round(distanceInKm * 18 + 20)),
+            moto: Math.max(30, Math.round(distanceInKm * 8 + 10)),
+            auto: Math.max(40, Math.round(distanceInKm * 12 + 15))
+        }
+    }
+
+    const fetchSuggestions = async (value, field) => {
+        if (!value || value.trim().length < 3) return
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+                params: { input: value },
+                headers: getAuthHeaders()
+            })
+
+            if (field === 'pickup') {
+                setPickupSuggestions(response.data)
+            } else {
+                setDestinationSuggestions(response.data)
+            }
+        } catch (error) {
+            console.error('Failed to fetch suggestions:', error)
+        }
+    }
+
+    const handlePickupChange = (e) => {
+        const value = e.target.value
+        setPickup(value)
+        fetchSuggestions(value, 'pickup')
+    }
+
+    const handleDestinationChange = (e) => {
+        const value = e.target.value
+        setDestination(value)
+        fetchSuggestions(value, 'destination')
+    }
+
+    const findTrip = async () => {
+        if (!pickup || !destination) return
+
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-distance-time`, {
+                params: {
+                    origin: pickup,
+                    destination: destination
+                },
+                headers: getAuthHeaders()
+            })
+
+            setFare(calculateFare(response.data.distance.value))
+            setVehiclePanel(true)
+            setPanelOpen(false)
+        } catch (error) {
+            console.error('Failed to find trip:', error)
+        }
+    }
+
+    const createRide = () => {
+        setVehicleFound(true)
+        setConfirmRidePanel(false)
+    }
+
     // const { socket } = useContext(SocketContext)
     // const { user } = useContext(UserDataContext)
 
@@ -46,20 +117,16 @@ const Home = () => {
     // }, [ user ])
 
     // socket.on('ride-confirmed', ride => {
-
-
     //     setVehicleFound(false)
     //     setWaitingForDriver(true)
     //     setRide(ride)
     // })
-
 
     // socket.on('ride-started', ride => {
     //     console.log("ride")
     //     setWaitingForDriver(false)
     //     navigate('/riding', { state: { ride } }) // Updated navigate to include ride data
     // })
-
 
     // const handlePickupChange = async (e) => {
     //     setPickup(e.target.value)
@@ -76,8 +143,6 @@ const Home = () => {
     //         // handle error
     //     }
     // }
-
-
 
     // const handleDestinationChange = async (e) => {
     //     setDestination(e.target.value)
@@ -204,8 +269,7 @@ const Home = () => {
         <div className='h-screen relative overflow-hidden'>
             <img className='w-16 absolute left-5 top-5' src="https://upload.wikimedia.org/wikipedia/commons/c/cc/Uber_logo_2018.png" alt="" />
             <div className='h-screen w-screen'>
-                {/* image for temporary use  */}
-                {/* <LiveTracking /> */}
+                <LiveTracking />
             </div>
             <div className=' flex flex-col justify-end h-screen absolute top-0 w-full'>
                 <div className='h-[30%] p-6 bg-white relative'>
@@ -224,8 +288,8 @@ const Home = () => {
                                 setPanelOpen(true)
                                 setActiveField('pickup')
                             }}
-                            // value={pickup}
-                            // onChange={handlePickupChange}
+                            value={pickup}
+                            onChange={handlePickupChange}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full'
                             type="text"
                             placeholder='Add a pick-up location'
@@ -235,14 +299,14 @@ const Home = () => {
                                 setPanelOpen(true)
                                 setActiveField('destination')
                             }}
-                            // value={destination}
-                            // onChange={handleDestinationChange}
+                            value={destination}
+                            onChange={handleDestinationChange}
                             className='bg-[#eee] px-12 py-2 text-lg rounded-lg w-full  mt-3'
                             type="text"
                             placeholder='Enter your destination' />
                     </form>
                     <button
-                        // onClick={findTrip}
+                        onClick={findTrip}
                         className='bg-black text-white px-4 py-2 rounded-lg mt-3 w-full'>
                         Find Trip
                     </button>
@@ -265,7 +329,7 @@ const Home = () => {
             </div>
             <div ref={confirmRidePanelRef} className='fixed w-full z-10 bottom-0 translate-y-full bg-white px-3 py-6 pt-12'>
                 <ConfirmRide
-                    // createRide={createRide}
+                    createRide={createRide}
                     pickup={pickup}
                     destination={destination}
                     fare={fare}

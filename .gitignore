@@ -1,0 +1,8 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Project env files
+backend/.env
+frontend/.env

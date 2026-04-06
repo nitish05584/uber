@@ -2,6 +2,13 @@
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
+## Maps setup
+
+Create a `frontend/.env` file with these values before running the live map UI:
+
+- `VITE_GOOGLE_MAPS_API_KEY`
+- `VITE_GOOGLE_MAP_ID` (recommended for advanced markers)
+
 Currently, two official plugins are available:
 
 - [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
