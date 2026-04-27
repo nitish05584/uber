@@ -8,6 +8,7 @@ import 'remixicon/fonts/remixicon.css'
 import { useContext } from 'react';
 import { UserDataContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../config/api';
 
 import LocationSearchPanel from '../components/LocationSearchPanel';
 import VehiclePanel from '../components/VehiclsPanel';
@@ -57,7 +58,7 @@ const Home = () => {
         if (!value || value.trim().length < 3) return
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-suggestions`, {
+            const response = await axios.get(`${API_BASE_URL}/maps/get-suggestions`, {
                 params: { input: value },
                 headers: getAuthHeaders()
             })
@@ -88,7 +89,7 @@ const Home = () => {
         if (!pickup || !destination) return
 
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/maps/get-distance-time`, {
+            const response = await axios.get(`${API_BASE_URL}/maps/get-distance-time`, {
                 params: {
                     origin: pickup,
                     destination: destination

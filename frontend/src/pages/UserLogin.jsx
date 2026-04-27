@@ -4,6 +4,7 @@ import { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { UserDataContext } from '../context/UserContext'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const UserLogin = () => {
     const [email,setEmail]=useState("")
@@ -25,7 +26,7 @@ const UserLogin = () => {
     
       try {
         const response = await axios.post(
-          `${import.meta.env.VITE_BASE_URL}/users/login`,
+          `${API_BASE_URL}/users/login`,
           userData,
           { withCredentials: true }
         );

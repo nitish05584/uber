@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from 'react'
 import { UserDataContext } from '../context/UserContext'
 import { useNavigate } from 'react-router-dom'
 import axios from 'axios'
+import { API_BASE_URL } from '../config/api'
 
 const UserProtectWrapper = ({
     children
@@ -19,7 +20,7 @@ const UserProtectWrapper = ({
 
     const fetchProfile = async () => {
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BASE_URL}/users/profile`, {
+            const response = await axios.get(`${API_BASE_URL}/users/profile`, {
                 withCredentials: true
             })
               

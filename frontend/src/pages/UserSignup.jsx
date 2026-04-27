@@ -5,6 +5,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
 import { useContext } from 'react'
 import { UserDataContext } from '../context/UserContext'
+import { API_BASE_URL } from '../config/api'
 
 
 const UserSignup = () => {
@@ -37,7 +38,7 @@ const UserSignup = () => {
 
   try {
     const response = await axios.post(
-      `${import.meta.env.VITE_BASE_URL}/users/register`,
+      `${API_BASE_URL}/users/register`,
       newUser,
       { withCredentials: true }
     );
